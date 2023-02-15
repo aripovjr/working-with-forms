@@ -5,41 +5,79 @@ const SimpleInput = (props) => {
   const [enteredNameTouched, setEnteredNameTouched] = useState(false);
   const [formIsValid, setFormIsValid] = useState(false);
 
+  const [enteredEmail, setEnteredEmail] = useState("");
+  const [enteredEmailTouched, setEnteredEmailTouched] = useState(false);
+
   const enteredNameIsValid = enteredName.trim() !== "";
   const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
 
+  const enteredEmailIsValid = enteredEmail.trim() !== "";
+  const emailInputIsInvalid = !enteredEmailIsValid && enteredEmailTouched;
+  const emailDoesInclude = enteredEmail.includes("@");
+  const emailInputStillInvalid = !emailDoesInclude && enteredEmailTouched;
+
   useEffect(() => {
-    if (enteredNameIsValid) {
+    if (enteredNameIsValid && enteredEmailIsValid && emailDoesInclude) {
       setFormIsValid(true);
     } else {
       setFormIsValid(false);
     }
-  }, [enteredNameIsValid]);
+  }, [enteredNameIsValid, enteredEmailIsValid, emailDoesInclude]);
 
   const getEnteredName = (e) => {
     setEnteredName(e.target.value);
   };
 
+  const getEnteredEmail = (e) => {
+    setEnteredEmail(e.target.value);
+  };
+
   const nameInputBlurHanlder = () => {
     setEnteredNameTouched(true);
+  };
+  const emailInputBlurHandler = () => {
+    setEnteredEmailTouched(true);
   };
 
   const submitHanlder = (e) => {
     e.preventDefault();
 
     setEnteredNameTouched(true);
+    setEnteredEmailTouched(true);
 
-    if (!enteredNameIsValid) {
+    if (!enteredNameIsValid && !enteredEmailIsValid) {
       return;
     }
 
     setEnteredName("");
+    setEnteredEmail("");
     setEnteredNameTouched(false);
+    setEnteredEmailTouched(false);
   };
 
   const nameInputClasses = nameInputIsInvalid
     ? "form-control invalid"
     : "form-control";
+
+  const emailInputClasses = emailInputIsInvalid
+    ? "form-control invalid"
+    : "form-control";
+
+  const content1 = <p className="error-text">Email must not be empty!</p>;
+  const content2 = (
+    <p className="error-text">
+      Email does not include "at" sign "example@gmail.com"
+    </p>
+  );
+
+  const renderSwitch = () => {
+    switch (true) {
+      case emailInputIsInvalid:
+        return content1;
+      case emailInputStillInvalid:
+        return content2;
+    }
+  };
 
   return (
     <form onSubmit={submitHanlder}>
@@ -56,6 +94,26 @@ const SimpleInput = (props) => {
         {nameInputIsInvalid && (
           <p className="error-text">Field must not be empty!</p>
         )}
+      </div>
+      {/* email validation */}
+      <div className={emailInputClasses}>
+        <label htmlFor="email">Your E-mail</label>
+        <input
+          type="email"
+          id="email"
+          onChange={getEnteredEmail}
+          onBlur={emailInputBlurHandler}
+          value={enteredEmail}
+          required
+        />
+        {renderSwitch()}
+
+        {/* {emailInputIsInvalid && (
+          <p className="error-text">Email must not be empty!</p>
+        )}
+        {emailInputStillInvalid && (
+          <p className="error-text">Email does not end with "@gmail.com"</p>
+        )} */}
       </div>
 
       <div className="form-actions">
