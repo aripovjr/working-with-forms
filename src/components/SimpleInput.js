@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
+import useInput from "../hooks/use-input";
 
 const SimpleInput = (props) => {
-  const [enteredName, setEnteredName] = useState("");
-  const [enteredNameTouched, setEnteredNameTouched] = useState(false);
+  const {
+    value: enteredName,
+    isValid: enteredNameIsValid,
+    hasError: nameInputHasError,
+    getEnteredName: getEnteredName,
+    nameInputBlurHanlder: nameInputBlurHanlder,
+    reset: resetNameInput,
+  } = useInput((value) => value.trim() !== "");
+
   const [formIsValid, setFormIsValid] = useState(false);
 
   const [enteredEmail, setEnteredEmail] = useState("");
   const [enteredEmailTouched, setEnteredEmailTouched] = useState(false);
-
-  const enteredNameIsValid = enteredName.trim() !== "";
-  const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
 
   const enteredEmailIsValid = enteredEmail.trim() !== "";
   const emailInputIsInvalid = !enteredEmailIsValid && enteredEmailTouched;
@@ -24,17 +29,10 @@ const SimpleInput = (props) => {
     }
   }, [enteredNameIsValid, enteredEmailIsValid, emailDoesInclude]);
 
-  const getEnteredName = (e) => {
-    setEnteredName(e.target.value);
-  };
-
   const getEnteredEmail = (e) => {
     setEnteredEmail(e.target.value);
   };
 
-  const nameInputBlurHanlder = () => {
-    setEnteredNameTouched(true);
-  };
   const emailInputBlurHandler = () => {
     setEnteredEmailTouched(true);
   };
@@ -42,20 +40,18 @@ const SimpleInput = (props) => {
   const submitHanlder = (e) => {
     e.preventDefault();
 
-    setEnteredNameTouched(true);
     setEnteredEmailTouched(true);
 
     if (!enteredNameIsValid && !enteredEmailIsValid) {
       return;
     }
 
-    setEnteredName("");
+    resetNameInput();
     setEnteredEmail("");
-    setEnteredNameTouched(false);
     setEnteredEmailTouched(false);
   };
 
-  const nameInputClasses = nameInputIsInvalid
+  const nameInputClasses = nameInputHasError
     ? "form-control invalid"
     : "form-control";
 
@@ -90,8 +86,7 @@ const SimpleInput = (props) => {
           onBlur={nameInputBlurHanlder}
           value={enteredName}
         />
-
-        {nameInputIsInvalid && (
+        {nameInputHasError && (
           <p className="error-text">Field must not be empty!</p>
         )}
       </div>
