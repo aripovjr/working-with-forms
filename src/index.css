@@ -108,4 +108,10 @@ button:disabled:active {
 
 .error-text {
   color: #b40e0e;
+  font-weight: bold;
+}
+.error-text span {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
 }
